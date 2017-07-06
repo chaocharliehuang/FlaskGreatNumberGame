@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <style>
+            body {
+                text-align: center;
+            }
+
+            #high_low {
+                display: none;
+                color: white;
+                width: 40%;
+                padding: 20px;
+                border: solid black 1px;
+                margin: 0 auto 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to the Great Number Game!</h1>
+        <p>I am thinking of a number between 1 and 10.</p>
+        <p>Take a guess!</p>
+        <div id="high_low"></div>
+        <form action="/guess" method="post" id="guess_form">
+            <input type="text" name="guess" id="guess">
+            <input type="submit" value="Guess">
+        </form>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script>
+            $('#guess_form').submit(function(e) {
+                var guess = $('#guess').val();
+                var resultHTML = '';
+                $.get('/' + guess, function(res) {
+                    if (parseInt(guess) > 10) {
+                        resultHTML = '<h2>Guess outside of range</h2>';
+                    } else if (res.result === 'correct') {
+                        $('#guess_form').css('display', 'none');
+                        resultHTML = '<h2>' + res.number + res.text + '</h2>';
+                        resultHTML += '<a href="/">Play again!</a>';
+                    } else {
+                        resultHTML = '<h2>' + res.text + '</h2>';
+                    }
+                    $('#high_low').html(resultHTML);
+                    $('#high_low').css('background-color', res.color);
+                    $('#high_low').css('display', 'block');
+                    $('#guess').val('');
+                }, 'json');
+                e.preventDefault();
+            });
+        </script>
+    </body>
+</html>
